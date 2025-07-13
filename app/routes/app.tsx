@@ -8,8 +8,8 @@ import { mockChatApi } from '../services/chat';
 
 export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "BOT" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "SupportPro" },
+    { name: "description", content: "SupportPro (Based Customer Support Assistant)" },
   ];
 }
 
@@ -135,7 +135,7 @@ function App() {
   }, [chats.length, currentChatId]);
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="h-screen">
       <AppSidebar
         chats={chats}
         currentChatId={currentChatId}
@@ -145,15 +145,20 @@ function App() {
         onDeleteChat={deleteChat}
       />
       <SidebarInset>
-        <main className="flex-1 flex flex-col">
-          <div className="p-4 border-b border-gray-800">
-            <SidebarTrigger />
+        <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
+          <div className="absolute inset-0 flex flex-col">
+            <div className="flex items-center p-4 border-b">
+              <SidebarTrigger className="mr-4" />
+              <h1 className="text-lg font-semibold">Chat</h1>
+            </div>
+            <div className="flex-1 overflow-hidden relative">
+              <ChatArea
+                messages={currentChat?.messages || []}
+                onSendMessage={sendMessage}
+                isLoading={isLoading}
+              />
+            </div>
           </div>
-          <ChatArea
-            messages={currentChat?.messages || []}
-            onSendMessage={sendMessage}
-            isLoading={isLoading}
-          />
         </main>
       </SidebarInset>
     </SidebarProvider>

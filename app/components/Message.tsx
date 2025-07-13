@@ -21,34 +21,31 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
   };
 
   return (
-    <div className={`flex gap-4 p-6 w-full ${isUser ? 'bg-gray-50' : 'bg-white'}`}>
-      <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+    <div className={`flex gap-4 p-6 ${isUser ? 'bg-gray-50' : 'bg-white'}`}>
+      <div className={`${isUser ? 'order-last' : ''} flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
         isUser ? 'bg-purple-600' : 'bg-green-600'
       }`}>
-        {isUser ? <User size={16} /> : <Bot size={16} />}
+        {isUser ? <User size={16} color='white' /> : <Bot size={16} color='white' />}
       </div>
-      
-      <div className="flex-1 space-y-3 text-left">
-        <div className="text-gray-900">
-          <div className="prose max-w-none">
-            <p className="whitespace-pre-wrap break-words max-w-6xl overflow-x-auto">{message.message}</p>
-          </div>
+
+      <div className={`flex-1 space-y-3 ${isUser ? 'text-right' : 'text-left'}`}>
+        <div className={`${isUser ? 'ml-auto' : 'mr-auto'} max-w-[800px]`}>
+          <p className="whitespace-pre-wrap break-words">{message.message}</p>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className={`flex items-center gap-2 text-xs text-gray-500 ${isUser ? 'justify-end' : 'justify-start'}`}>
+          {message.timestamp && (
+            <span className="flex-shrink-0">
+              {new Date(message.timestamp).toLocaleTimeString()}
+            </span>
+          )}
           <button
             onClick={copyToClipboard}
-            className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+            className="flex items-center gap-1 px-2 py-1 text-gray-600 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 rounded transition-colors"
           >
             {copied ? <Check size={12} /> : <Copy size={12} />}
             {copied ? 'Copied!' : 'Copy'}
           </button>
-          
-          {message.timestamp && (
-            <span className="text-xs text-gray-500">
-              {new Date(message.timestamp).toLocaleTimeString()}
-            </span>
-          )}
         </div>
       </div>
     </div>

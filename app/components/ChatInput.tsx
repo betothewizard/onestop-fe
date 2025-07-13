@@ -31,6 +31,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }
       onSendMessage(message.trim(), selectedFiles[0] || undefined);
       setMessage('');
       setSelectedFiles([]);
+      if (textareaRef.current) {
+        textareaRef.current.style.height = '48px';
+      }
     }
   };
 
@@ -84,6 +87,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }
     }
   };
 
+  const adjustTextareaHeight = (target: HTMLTextAreaElement) => {
+    target.style.height = '48px';
+    const newHeight = Math.min(target.scrollHeight, 200);
+    target.style.height = `${newHeight}px`;
+  };
+
   return (
     <div className="border-t border-gray-200 bg-white">
       {/* Files as tags above input */}
@@ -115,26 +124,28 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }
       {/* Chat input area with border and rounded corners */}
       <form onSubmit={handleSubmit} className="px-6 pb-4 pt-2">
         <div className="flex flex-col gap-2">
-          <textarea
-            ref={textareaRef}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type your message here..."
-            className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none shadow-sm"
-            rows={1}
-            style={{ minHeight: '48px', maxHeight: '200px' }}
-            onInput={(e) => {
-              const target = e.target as HTMLTextAreaElement;
-              target.style.height = 'auto';
-              target.style.height = Math.min(target.scrollHeight, 200) + 'px';
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSubmit(e);
-              }
-            }}
-          />
+          <div className="relative">
+            <textarea
+              ref={textareaRef}
+              value={message}
+              onChange={(e) => {
+                setMessage(e.target.value);
+                adjustTextareaHeight(e.target);
+              }}
+              placeholder="Type your message here..."
+              className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none shadow-sm overflow-hidden"
+              style={{ 
+                minHeight: '48px',
+                maxHeight: '200px'
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(e);
+                }
+              }}
+            />
+          </div>
           {/* Icons below input, centered */}
           <div className="flex items-center justify-center gap-2 mt-1">
             <input

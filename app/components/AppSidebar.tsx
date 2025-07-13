@@ -72,7 +72,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
     <Sidebar>
       <SidebarHeader>
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-white">T3Chat</h1>
+          <h1 className="text-xl font-semibold text-black">SupportPro</h1>
         </div>
       </SidebarHeader>
       <SidebarContent>
