@@ -3,6 +3,7 @@ import { Message } from '../components/Message';
 import { MessageSkeleton } from '../components/MessageSkeleton';
 import { ChatInput } from '../components/ChatInput';
 import { type Message as MessageType } from '../types/chat';
+import { ScrollArea } from "../components/ui/scroll-area";
 
 interface ChatAreaProps {
   messages: MessageType[];
@@ -18,16 +19,16 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, onSendMessage, isL
   }, [messages, isLoading]);
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-900">
-      <div className="flex-1 overflow-y-auto">
+    <div className="flex-1 flex flex-col w-full">
+      <ScrollArea className="flex-1">
         {messages.length === 0 && !isLoading ? (
           <div className="h-full flex items-center justify-center">
             <div className="text-center">
               <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">💬</span>
               </div>
-              <h2 className="text-xl font-semibold text-white mb-2">Start a new conversation</h2>
-              <p className="text-gray-400">Send a message to begin chatting with AI</p>
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">Start a new conversation</h2>
+              <p className="text-gray-600">Send a message to begin chatting with AI</p>
             </div>
           </div>
         ) : (
@@ -39,8 +40,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, onSendMessage, isL
             <div ref={messagesEndRef} />
           </div>
         )}
-      </div>
-      
+      </ScrollArea>
       <ChatInput onSendMessage={onSendMessage} isLoading={isLoading} />
     </div>
   );

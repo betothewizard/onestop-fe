@@ -1,21 +1,22 @@
-import type { Route } from "./+types/home";
+import type { Route } from "./+types/app";
 import React, { useState, useCallback } from 'react';
-import { Sidebar } from '../components/Sidebar';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '../components/ui/sidebar';
+import { AppSidebar } from '../components/AppSidebar';
 import { ChatArea } from '../components/ChatArea';
 import { type Chat, type Message } from '../types/chat';
 import { mockChatApi } from '../services/chat';
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
+    { title: "BOT" },
     { name: "description", content: "Welcome to React Router!" },
   ];
 }
+
 function App() {
   const [chats, setChats] = useState<Chat[]>([]);
   const [currentChatId, setCurrentChatId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const currentChat = chats.find(chat => chat.id === currentChatId);
 
@@ -27,7 +28,7 @@ function App() {
       messages: [],
       lastUpdated: Date.now(),
     };
-    
+
     setChats(prev => [newChat, ...prev]);
     setCurrentChatId(newChatId);
   }, []);
@@ -37,8 +38,8 @@ function App() {
   }, []);
 
   const renameChat = useCallback((chatId: number, newName: string) => {
-    setChats(prev => prev.map(chat => 
-      chat.id === chatId 
+    setChats(prev => prev.map(chat =>
+      chat.id === chatId
         ? { ...chat, name: newName, lastUpdated: Date.now() }
         : chat
     ));
@@ -55,7 +56,7 @@ function App() {
     if (!message.trim() && !file) return;
 
     let chatId = currentChatId;
-    
+
     // Create new chat if none exists
     if (!chatId) {
       chatId = Date.now();
@@ -65,7 +66,7 @@ function App() {
         messages: [],
         lastUpdated: Date.now(),
       };
-      
+
       setChats(prev => [newChat, ...prev]);
       setCurrentChatId(chatId);
     }
@@ -83,14 +84,14 @@ function App() {
       timestamp: Date.now()
     };
 
-    setChats(prev => prev.map(chat => 
-      chat.id === chatId 
-        ? { 
-            ...chat, 
-            messages: [...chat.messages, userMessage],
-            lastUpdated: Date.now(),
-            name: chat.name === 'New Chat' ? (message.slice(0, 50) + (message.length > 50 ? '...' : '')) : chat.name
-          }
+    setChats(prev => prev.map(chat =>
+      chat.id === chatId
+        ? {
+          ...chat,
+          messages: [...chat.messages, userMessage],
+          lastUpdated: Date.now(),
+          name: chat.name === 'New Chat' ? (message.slice(0, 50) + (message.length > 50 ? '...' : '')) : chat.name
+        }
         : chat
     ));
 
@@ -106,14 +107,14 @@ function App() {
       });
 
       if (response.code === 200) {
-        setChats(prev => prev.map(chat => 
-          chat.id === chatId 
-            ? { 
-                ...chat, 
-                messages: response.data.messages,
-                lastUpdated: Date.now(),
-                name: chat.name === 'New Chat' ? (message.slice(0, 50) + (message.length > 50 ? '...' : '')) : chat.name
-              }
+        setChats(prev => prev.map(chat =>
+          chat.id === chatId
+            ? {
+              ...chat,
+              messages: response.data.messages,
+              lastUpdated: Date.now(),
+              name: chat.name === 'New Chat' ? (message.slice(0, 50) + (message.length > 50 ? '...' : '')) : chat.name
+            }
             : chat
         ));
       }
@@ -126,10 +127,6 @@ function App() {
     }
   }, [currentChatId, isLoading]);
 
-  const toggleSidebar = useCallback(() => {
-    setIsSidebarCollapsed(prev => !prev);
-  }, []);
-
   // Start with a new chat if no chats exist
   React.useEffect(() => {
     if (chats.length === 0 && currentChatId === null) {
@@ -138,24 +135,28 @@ function App() {
   }, [chats.length, currentChatId]);
 
   return (
-    <div className="h-screen flex bg-gray-900 text-white">
-      <Sidebar
+    <SidebarProvider>
+      <AppSidebar
         chats={chats}
         currentChatId={currentChatId}
-        isCollapsed={isSidebarCollapsed}
-        onToggleCollapse={toggleSidebar}
         onSelectChat={selectChat}
         onNewChat={createNewChat}
         onRenameChat={renameChat}
         onDeleteChat={deleteChat}
       />
-      
-      <ChatArea
-        messages={currentChat?.messages || []}
-        onSendMessage={sendMessage}
-        isLoading={isLoading}
-      />
-    </div>
+      <SidebarInset>
+        <main className="flex-1 flex flex-col">
+          <div className="p-4 border-b border-gray-800">
+            <SidebarTrigger />
+          </div>
+          <ChatArea
+            messages={currentChat?.messages || []}
+            onSendMessage={sendMessage}
+            isLoading={isLoading}
+          />
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
 
